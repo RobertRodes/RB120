@@ -1,4 +1,13 @@
 # RPS 1.0
+# I wrote an implementation of this without looking at Chris's videos, to 
+# see what I came up with. My original version had this rather more 
+# streamlined way of determining the winner than the one Chris used in his 
+# initial version, so I opted to keep it in v1.0 rather than abstracting 
+# the Move process into its own class. The means used here is to use a 
+# constant with an array of sub-arrays, each sub-array containing one of 
+# the three winner-loser combinations. It works fine here, but doesn't 
+# scale particularly well. The next version (1.1) uses Chris's Move class.
+
 class Player
   MOVES = %w(rock paper scissors).freeze
   attr_accessor :move, :name
