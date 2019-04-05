@@ -1,4 +1,5 @@
-
+# RPSLS 2.0
+# All extra features implemented
 
 # Utilities module. Contains a constant with written numbers, a prompt that 
 # allows user input to be typed on the same line, and a #wait method that 
@@ -257,7 +258,6 @@ class Computer < Player
 
   private
 
-  # Always pick lizard
   def animate
     [Lizard, Spock]
   end
@@ -267,7 +267,6 @@ class Computer < Player
     history.list.select { |_, val| val[1] == min_val }.keys
   end
 
-  # Always pick Spock
   def inanimate
     [Rock, Paper, Scissors]
   end
