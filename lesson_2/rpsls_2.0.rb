@@ -243,10 +243,10 @@ class Computer < Player
   attr_accessor :move
   attr_reader :history
 
-  def initialize(_last_player = nil)
+  def initialize(last_player = nil)
     # prevent the same computer being selected twice in a row.
     @names = COMPUTERS.values
-    # @names.delete(last_player)
+    @names.delete(last_player)
     super()
     @history = ComputerHistory.new(self)
   end
