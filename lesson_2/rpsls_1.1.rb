@@ -219,7 +219,6 @@ class RPSGame
     @human = Human.new
     @computer = Computer.new
     @display = Display.new(@human, @computer)
-    @history = History.new
   end
 
   def play(first_game = true)
@@ -271,7 +270,6 @@ class RPSGame
       human.choose
       computer.choose
       winner = process_winner
-      update_history(winner)
       display.winner(winner, find_win_text(winner))
     end
   end
