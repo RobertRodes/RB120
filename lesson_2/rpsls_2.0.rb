@@ -249,7 +249,7 @@ class Computer < Player
     @names = COMPUTERS.values
     @names.delete(last_player)
     super()
-    @history = ComputerHistory.new(self)
+    @history = ComputerHistory.new
   end
 
   def choose
@@ -418,7 +418,7 @@ end
 class ComputerHistory
   attr_reader :list
 
-  def initialize(player)
+  def initialize
     @list = {
       Rock     => [0, 0],
       Paper    => [0, 0],
