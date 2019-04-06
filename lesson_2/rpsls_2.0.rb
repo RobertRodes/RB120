@@ -1,9 +1,9 @@
 # RPSLS 2.0
 # All extra features implemented
 
-# Utilities module. Contains a constant with written numbers, a prompt that 
-# allows user input to be typed on the same line, and a #wait method that 
-# synchronizes #sleep with #gets, by clearing the input buffer while the 
+# Utilities module. Contains a constant with written numbers, a prompt that
+# allows user input to be typed on the same line, and a #wait method that
+# synchronizes #sleep with #gets, by clearing the input buffer while the
 # #sleep method is running.
 module Utilities
   require 'io/console'
@@ -43,19 +43,19 @@ end
 # which moves beat which, and to store strings that explain why a given move
 # beats another.
 #
-# The move class also handles the move history directly. I thought about 
+# The move class also handles the move history directly. I thought about
 # abstracting this functionality into a separate History class, and
 # subclassing ComputerHistory from it, but I decided against it. My reasons
-# for doing so are first, that although they both involve keeping history of 
+# for doing so are first, that although they both involve keeping history of
 # the game moves, they do so for unrelated reasons. The Move history is about
 # displaying a table of the moves in a game so far, while the ComputerHistory
-# class is about keeping track of computer wins and losses to support some of 
+# class is about keeping track of computer wins and losses to support some of
 # the player-specific choice algorithms. Second, the fact that there is only
 # one move history in the game suggests that abstracting out the History
 # class is unnecessary. (One could argue the same for the ComputerHistory
 # class, and it is certainly an option to fold that functionality into the
 # computer class. But that class was getting big enough, at 50 lines of code
-# or so, to be unwieldy, so I opted to separate the class out.) Finally, I 
+# or so, to be unwieldy, so I opted to separate the class out.) Finally, I
 # wanted to get some practice at implementing class-level functionality.
 class Move
   @history = []
@@ -174,8 +174,8 @@ class Spock < Move
 end
 
 # Player classes. Player is subclassed into Human and Computer. Since
-# the behaviors and state of these two diverge widely, most of the 
-# implementation is in the two subclasses. However, it still makes 
+# the behaviors and state of these two diverge widely, most of the
+# implementation is in the two subclasses. However, it still makes
 # sense to subclass them from Player, since they both share the
 # name and wins attributes.
 class Player
@@ -218,7 +218,7 @@ class Human < Player
     loop do
       prompt "#{first_time ? 'Hello. W' : 'So, w'}hat's your name? ", false
       the_name = gets.chomp
-      break unless the_name.gsub(' ', '').empty?
+      break unless the_name.delete(' ').empty?
       first_time = false
       prompt "I'll tell you mine if you'll tell me yours. "
     end
@@ -287,8 +287,8 @@ class Computer < Player
 end
 
 # Display class. Handles (nearly) all aspects of screen display. The exception
-# is in methods that get user input: human name, number of wins, individual 
-# game moves, and play again logic. I wanted to restrict the behavior of this 
+# is in methods that get user input: human name, number of wins, individual
+# game moves, and play again logic. I wanted to restrict the behavior of this
 # class entirely to displaying stuff on the screen.
 class Display
   include Utilities
@@ -412,7 +412,7 @@ class Display
   end
 end
 
-# ComputerHistory class. This class stores data about the computer's move 
+# ComputerHistory class. This class stores data about the computer's move
 # choices, and whether they were wins or losses. This supports the fewest
 # moves and largest win difference algorithms. (See the Computer class.)
 class ComputerHistory
@@ -433,7 +433,7 @@ class ComputerHistory
   end
 end
 
-# Main game class. Handles the game play logic, and manages the flow of 
+# Main game class. Handles the game play logic, and manages the flow of
 # the game.
 class RPSGame
   include Utilities
