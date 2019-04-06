@@ -215,6 +215,7 @@ class Human < Player
 
   def input_name(first_time)
     the_name = ''
+    system('clear') || system('cls')
     loop do
       prompt "#{first_time ? 'Hello. W' : 'So, w'}hat's your name? ", false
       the_name = gets.chomp
@@ -307,11 +308,13 @@ class Display
   end
 
   def goodbye_message
+    system('clear') || system('cls')
     prompt "Thanks for playing, #{human.name}. Goodbye!"
     puts
   end
 
   def new_game
+    system('clear') || system('cls')
     prompt "Hello, #{human.name}. My name is #{computer.name}. " \
            "I'll be playing you this time."
     puts
@@ -393,6 +396,7 @@ class Display
   end
 
   def show_moves
+    system('clear') || system('cls')
     prompt "#{human.name}, you chose #{human.move}, " \
            "and I chose #{computer.move}."
   end
