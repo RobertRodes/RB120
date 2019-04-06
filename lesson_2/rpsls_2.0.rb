@@ -218,12 +218,12 @@ class Human < Player
     loop do
       prompt "#{first_time ? 'Hello. W' : 'So, w'}hat's your name? ", false
       the_name = gets.chomp
-      break unless the_name.empty?
+      break unless the_name.gsub(' ', '').empty?
       first_time = false
       prompt "I'll tell you mine if you'll tell me yours. "
     end
     puts
-    the_name.capitalize
+    the_name.split.map(&:capitalize).join(' ')
   end
 
   def set_name
