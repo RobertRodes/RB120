@@ -1,8 +1,8 @@
 # All constants that are not used exclusively by the Game class and its
 # Choosable and Displayable mixins. I broke these out for various reasons:
 # I don't like doing things like Square::INITIAL_MARKER, and I don't want
-# to hunt for constants in a lot of different places in the code. So, for 
-# me, it makes sense to put them all in one place and reference them as 
+# to hunt for constants in a lot of different places in the code. So, for
+# me, it makes sense to put them all in one place and reference them as
 # needed.
 module Constants
   HUMAN_MARKER = 'X'.freeze
@@ -381,8 +381,8 @@ class Computer < Player
   end
 
   # This tactic selects a non-corner square if the human has selected
-  # opposing corners for the first two moves, and a corner square if 
-  # not. This neutralizes a couple of winning tactics that the player 
+  # opposing corners for the first two moves, and a corner square if
+  # not. This neutralizes a couple of winning tactics that the player
   # who goes first can otherwise do.
   #
   # If player plays 1, computer plays 5, player plays 9, and computer
