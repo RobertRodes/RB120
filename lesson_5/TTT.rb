@@ -106,8 +106,8 @@ module Choosable
     loop do
       say "#{Human == player.class ? 'Your' : 'My'} marker (A-Z)? "
       the_marker = gets.chomp.upcase
-      if !(the_marker =~ /[A-Z]/)
-        say "A to Z, please.", 1
+      if !(the_marker =~ /\A[A-Z]\z/)
+        say "Give me a single character from A to Z, please.", 1
       elsif player.class == Computer && human.mark == the_marker
         say "You've already chosen #{the_marker} for yourself. Please " \
             "choose something different.", 1
