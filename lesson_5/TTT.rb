@@ -253,10 +253,10 @@ class Board
   # branch overhead, and it occurred to me that a single call to #print using
   # newline characters should be more efficient than making 10 calls to #puts
   # and relying on its supplying a newline of its own to break out the board
-  # into multiple lines. Of course, I could use a single #puts to do this as 
-  # well, but #print gives clearer control in a multi-line context since it 
-  # doesn't supply a new line of its own. It looks like this implementation 
-  # gets the ABCSize down to 4: one call to #print and three calls to 
+  # into multiple lines. Of course, I could use a single #puts to do this as
+  # well, but #print gives clearer control in a multi-line context since it
+  # doesn't supply a new line of its own. It looks like this implementation
+  # gets the ABCSize down to 4: one call to #print and three calls to
   # #board_line.
   def draw
     print "     |     |\n"      \
@@ -382,13 +382,13 @@ class Computer < Player
 
   # This tactic selects a non-corner square if the human has selected
   # opposing corners for the first two moves, and a corner square if
-  # not. 
+  # not.
   #
   # This neutralizes a couple of winning tactics that the player
-  # who goes first can otherwise do: if player plays 1, computer plays 
-  # 5, player plays 9, and computer plays a corner square, playing to 
-  # the remaining corner gives two winners. Also, if player plays 5 and 
-  # computer plays a non-corner square, then player plays any corner, 
+  # who goes first can otherwise do: if player plays 1, computer plays
+  # 5, player plays 9, and computer plays a corner square, playing to
+  # the remaining corner gives two winners. Also, if player plays 5 and
+  # computer plays a non-corner square, then player plays any corner,
   # computer blocks in the opposite corner, and player plays the corner
   # not adjacent to the computer's non-corner play, that will also give
   # two winners.
