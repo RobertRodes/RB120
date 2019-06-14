@@ -230,7 +230,7 @@ module Utilities
 
   def say(message, new_lines = 0)
     print message.to_s
-    new_lines.times { print "\n" }
+    print "\n" * new_lines
   end
 end
 
@@ -251,13 +251,13 @@ class Board
   # I borrowed #board_line, which reduced the ABCSize from 20 to 16, from the
   # previous version of TTT. However, I thought I might further reduce the
   # branch overhead, and it occurred to me that a single call to #print using
-  # newline characters was much more efficient than making 10 calls to #puts
+  # newline characters should be more efficient than making 10 calls to #puts
   # and relying on its supplying a newline of its own to break out the board
-  # into multiple lines. Of course, I could use #puts to do this as well, but
-  # #print gives clearer control since it doesn't supply a new line of its own.
-  # a multi-line text string in a single go more naturally than #puts does,
-  # It looks like this implementation gets the ABCSize down to 4: one call to
-  # #print and three calls to #board_line.
+  # into multiple lines. Of course, I could use a single #puts to do this as 
+  # well, but #print gives clearer control in a multi-line context since it 
+  # doesn't supply a new line of its own. It looks like this implementation 
+  # gets the ABCSize down to 4: one call to #print and three calls to 
+  # #board_line.
   def draw
     print "     |     |\n"      \
           "#{board_line(0)}\n"  \
@@ -369,10 +369,10 @@ class Computer < Player
   # opposing corners (this can be disabled to allow it as a winning
   # strategy), then take a random square.
   def best_move
-    find_at_risk_square(mark) ||
+    find_at_risk_square(mark)          ||
       find_at_risk_square(@human.mark) ||
-      center_square ||
-      corner_play ||
+      center_square                    ||
+      corner_play                      ||
       board.unmarked_keys.sample
   end
 
@@ -382,17 +382,18 @@ class Computer < Player
 
   # This tactic selects a non-corner square if the human has selected
   # opposing corners for the first two moves, and a corner square if
-  # not. This neutralizes a couple of winning tactics that the player
-  # who goes first can otherwise do.
+  # not. 
   #
-  # If player plays 1, computer plays 5, player plays 9, and computer
-  # plays a corner square, playing to the remaining corner gives two
-  # winners. If player plays 5 and computer plays a non-corner square,
-  # then player plays any corner, computer blocks, and player plays
-  # any corner not adjacent to the computer's non-corner play, that
-  # will also give two winners.
+  # This neutralizes a couple of winning tactics that the player
+  # who goes first can otherwise do: if player plays 1, computer plays 
+  # 5, player plays 9, and computer plays a corner square, playing to 
+  # the remaining corner gives two winners. Also, if player plays 5 and 
+  # computer plays a non-corner square, then player plays any corner, 
+  # computer blocks in the opposite corner, and player plays the corner
+  # not adjacent to the computer's non-corner play, that will also give
+  # two winners.
   #
-  # I haven't found a way to beat the computer without disabling this;
+  # I haven't found a way to beat the computer without disabling this,
   # so I put an UNBEATABLE constant in to make the computer beatable
   # by one of these tactics.
   def corner_play
@@ -520,7 +521,7 @@ class TTTGame
     display_new_game_screen
   end
 
-  # Broken out of #initial_setup to reduce ABCSize
+  # Broken out of #initial_setup to reduce ABCSize.
   def initial_setup_pause
     puts
     say "Thanks, #{human.name}, I have everything I need to get started.\n" \
