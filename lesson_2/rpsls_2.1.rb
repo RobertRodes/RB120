@@ -338,7 +338,8 @@ class RPSGame
     loop do
       prompt 'Winner is first one to win how many games (1-20)? ', false
       games = gets.chomp
-      if games == games.to_i && games.between?(1, 20)
+      if games =~ /\A([1-9]|1[0-9]|20)\z/
+        games = games.to_i
         prompt "Ok, #{games < 10 ? WRITTEN_NUMBERS[games] : games} it is. " \
                "Let's get started.\n"
         return games
