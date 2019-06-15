@@ -27,6 +27,8 @@ module GameConstants
   FIRST_GAME = true
   HUMAN_MARKER = 'X'.freeze
   HUMAN_PLAYER = 'human'.freeze
+  # FIRST_TO_MOVE is not in alphabetical order because it has to be declared
+  # after HUMAN_PLAYER if we want to be able to assign HUMAN_PLAYER to it.
   FIRST_TO_MOVE = CHOOSE_PLAYER
   NUMBER_TEXT = {
     1 => 'one',
@@ -128,7 +130,7 @@ module Choosable
     end
   end
 
-  # I added this one in here just for fun.
+  # An additional feature; why not?
   def choose_number_of_games
     win_count = nil
     loop do
