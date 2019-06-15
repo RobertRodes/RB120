@@ -5,7 +5,6 @@
 # me, it makes sense to put them all in one place and reference them as
 # needed.
 module Constants
-  HUMAN_MARKER = 'X'.freeze
   INITIAL_MARKER = ' '.freeze
   UNBEATABLE = true
   WINNING_LINES = [
@@ -26,6 +25,7 @@ module GameConstants
   COMPUTER_NAME = 'Wall-E'.freeze
   COMPUTER_PLAYER = 'computer'.freeze
   FIRST_GAME = true
+  HUMAN_MARKER = 'X'.freeze
   HUMAN_PLAYER = 'human'.freeze
   FIRST_TO_MOVE = CHOOSE_PLAYER
   NUMBER_TEXT = {
