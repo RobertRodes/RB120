@@ -19,6 +19,10 @@
 #    take the match when displaying the board.
 # 9. Removed explanatory notes having to do with design decisions.
 
+# TTT 1.1.1 change
+# 1. Removed attr_reader for `squares` attribute in Board, and changed all the
+#    references to it to reference the @squares instance variable instead.
+
 module Utilities
   require 'io/console'
   def cls
@@ -43,7 +47,7 @@ class Board
     [1, 5, 9], [3, 5, 7]
   ]
 
-  attr_reader :squares
+  # attr_reader :squares
 
   def initialize
     @squares = {}
@@ -73,7 +77,7 @@ class Board
   end
 
   def markers_at(key_list)
-    squares.slice(*key_list).values.map(&:marker)
+    @squares.slice(*key_list).values.map(&:marker)
   end
 
   def someone_won?
@@ -81,12 +85,12 @@ class Board
   end
 
   def unmarked_keys
-    squares.keys.select { |key| squares[key].unmarked? }
+    @squares.keys.select { |key| @squares[key].unmarked? }
   end
 
   def winning_marker
     WINNING_LINES.each do |line|
-      line_squares = squares.values_at(*line)
+      line_squares = @squares.values_at(*line)
       next if line_squares.any?(&:unmarked?)
       markers = line_squares.map(&:marker)
       return markers.first if winner?(markers)
@@ -98,9 +102,9 @@ class Board
 
   def board_line(the_line)
     left_square = the_line * 3 + 1
-    "  #{squares[left_square]}  |"     \
-    "  #{squares[left_square + 1]}  |" \
-    "  #{squares[left_square + 2]}"
+    "  #{@squares[left_square]}  |"     \
+    "  #{@squares[left_square + 1]}  |" \
+    "  #{@squares[left_square + 2]}"
   end
 
   def winner?(markers)
@@ -137,7 +141,7 @@ class Player
 end
 
 class Computer < Player
-  UNBEATABLE = false
+  UNBEATABLE = true
   CORNERS = [1, 3, 7, 9]
   NON_CORNERS = [2, 4, 6, 8]
 
