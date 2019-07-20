@@ -1,5 +1,3 @@
-require 'pry'
-
 # Application-wide constants
 module App
   BUST_VALUE = 21
@@ -35,6 +33,8 @@ module Utilities
     print "\n" * new_lines
   end
 
+  # This disables keyboard input while #sleep is running. Necessary in
+  # key_only mode because otherwise key inputs will echo on the screen.
   def wait(for_time)
     system('stty raw -echo')
     sleep for_time
@@ -57,6 +57,7 @@ module Utilities
 end
 
 class Deck
+  # Used for calculating score
   CARD_VALUES = {
     '2'  => 2,
     '3'  => 3,
@@ -75,6 +76,7 @@ class Deck
 
   RANKS = %w(2 3 4 5 6 7 8 9 10 J Q K A).freeze
 
+  # UTF codes for suit symbols
   SUITS = ["\u2660", "\u2661", "\u2662", "\u2663"].freeze
 
   attr_reader :cards
@@ -88,6 +90,8 @@ class Deck
   end
 end
 
+# This is equivalent to "Participant" in the reference. I opted for "Gambler"
+# for the player.
 class Player
   include Utilities
   attr_reader :hand, :score
@@ -99,8 +103,6 @@ class Player
   def deal_hand
     @hand = []
     2.times { hit }
-    # @hand[0][0] = 'A'
-    # @hand[1][0] = 'K'
     calc_score
   end
 
@@ -128,8 +130,7 @@ class Player
 end
 
 class Gambler < Player
-  attr_accessor :cash
-  attr_reader :name
+  attr_accessor :cash, :name
 
   def initialize(deck, cash)
     super(deck)
@@ -202,11 +203,10 @@ class Dealer < Player
   end
 end
 
+# Displays the table. The table shows the header, the player's and dealer's
+# hands, the scores, and the player's cash.
 class Table
   include Utilities
-
-  NATURAL_YES = 'Got one!'
-  NATURAL_NO = 'Not this time.'
 
   def initialize(dealer, gambler)
     @dealer = dealer
@@ -227,13 +227,6 @@ class Table
           "Player cash:  $#{@gambler.cash}\n\n"
   end
 
-  def show_dealer_check_natural(natural)
-    print word_wrap("Dealer is checking for a natural #{App::BUST_VALUE} ... ")
-    wait App::SLEEP_TIME
-    print "#{natural ? NATURAL_YES : NATURAL_NO}\n"
-    wait App::SLEEP_TIME
-  end
-
   private
 
   def create_hand_view(player)
@@ -247,7 +240,13 @@ class Table
   end
 end
 
+# Handles a single round of play, from dealing the hands to figuring the result.
 class Round
+  include Utilities
+
+  NATURAL_YES = 'Got one!'
+  NATURAL_NO = 'Not this time.'
+
   attr_reader :result
 
   def initialize(dealer, gambler, table)
@@ -298,7 +297,10 @@ class Round
 
   def dealer_check_natural
     return unless Deck::CARD_VALUES[@dealer.hand[0][0]] >= 10
-    @table.show_dealer_check_natural(@dealer.score == App::BUST_VALUE)
+    print word_wrap("Dealer is checking for a natural #{App::BUST_VALUE} ... ")
+    wait App::SLEEP_TIME
+    print "#{@dealer.score == App::BUST_VALUE ? NATURAL_YES : NATURAL_NO}\n"
+    wait App::SLEEP_TIME
   end
 end
 
@@ -306,28 +308,24 @@ class BlackJack
   include Utilities
 
   BET = 1
-  GAMBLER_STAKE = 50
   NATURAL_MULTIPLIER = 10
 
   APPLY_BET = {
     gambler_natural: BET * NATURAL_MULTIPLIER,
     dealer_bust:     BET,
     gambler:         BET,
-    push:            0,
     natural_push:    0,
+    push:            0,
     dealer:          -BET,
     gambler_bust:    -BET,
     dealer_natural:  -BET
   }.freeze
 
-  # Increasing App::BUST_VALUE requires that NEW_DECK_COUNT be increased as
-  # well. To avoid the possibility of an error from trying to deal from an
-  # empty deck, NEW_DECK_COUNT has to be at least as high as the maximum
-  # possible number of cards for both hands.
-  NEW_DECK_COUNT = 18
+  GAMBLER_STAKE = 50
 
   HAND_RESULT_PROMPT = {
-    gambler_natural: "Player holds a natural #{App::BUST_VALUE}! Player wins.",
+    gambler_natural: "Player holds a natural #{App::BUST_VALUE}! Player " \
+                     "wins $#{APPLY_BET[:gambler_natural]}.",
     dealer_bust:     'Dealer busted. Player wins.',
     gambler:         'Player wins.',
     natural_push:    "Dealer and player both hold a natural " \
@@ -338,7 +336,11 @@ class BlackJack
     dealer_natural:  "Dealer holds a natural #{App::BUST_VALUE}. Dealer wins."
   }.freeze
 
-  attr_accessor :deck, :dealer, :gambler, :table
+  # Increasing App::BUST_VALUE requires that NEW_DECK_COUNT be increased as
+  # well. To avoid the possibility of an error from trying to deal from an
+  # empty deck, NEW_DECK_COUNT has to be at least as high as the maximum
+  # possible number of cards for both hands.
+  NEW_DECK_COUNT = 18
 
   def initialize
     @deck = Deck.new
@@ -354,7 +356,7 @@ class BlackJack
       round.play
       @dealer.hide_hand = false
       @gambler.cash += APPLY_BET[round.result]
-      table.show
+      @table.show
       say HAND_RESULT_PROMPT[round.result], 2
       break unless play_again?
       reset
@@ -397,7 +399,8 @@ class BlackJack
     message = closing_screen_message
     cls
     print "\n#{'General Rodes Black Jack'.center(App::SCREEN_WIDTH)}\n\n" \
-          "Thank you for playing at General Rodes Black Jack!\n\n" \
+          "Thank you for playing at General Rodes Black Jack, " \
+          "#{@gambler.name}!\n\n" \
           "#{word_wrap(message)}\n\n" \
           "Please hit #{KEY_ONLY ? 'any key' : '"Enter"'} to leave."
     getchar
