@@ -130,7 +130,8 @@ class Player
 end
 
 class Gambler < Player
-  attr_accessor :cash, :name
+  attr_accessor :cash
+  attr_reader :name
 
   def initialize(deck, cash)
     super(deck)
