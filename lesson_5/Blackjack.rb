@@ -3,6 +3,7 @@ module App
   BUST_VALUE = 21
   DEALER_STAND_VALUE = 17
   SCREEN_WIDTH = 60
+  HEADER = "\n#{'General Rodes Black Jack'.center(SCREEN_WIDTH)}\n\n"
   SLEEP_TIME = 1 # How long to wait between dealer cards dealt, etc.
 end
 
@@ -42,7 +43,7 @@ module Utilities
   end
 
   # Assumes "space plus \n\n" for new paragraph.
-  def word_wrap(str, width = 60)
+  def word_wrap(str, width = App::SCREEN_WIDTH)
     char_count = 0
     lastchar = str.end_with?(' ') ? ' ' : ''
     str.split(/ /).each do |word|
@@ -100,7 +101,7 @@ class Player
     @deck = deck
   end
 
-  def deal_hand
+  def new_hand
     @hand = []
     2.times { hit }
     calc_score
@@ -159,9 +160,9 @@ class Gambler < Player
     first_time = true
     the_name = ''
     cls
-    say "\nWelcome to General Rodes Black Jack! "
+    welcome = "\nWelcome to General Rodes Black Jack! "
     loop do
-      say "#{first_time ? 'W' : 'So, w'}hat's your name? "
+      say word_wrap("#{first_time ? welcome + 'W' : 'So, w'}hat's your name? ")
       the_name = gets.chomp
       break unless the_name.delete(' ').empty?
       first_time = false
@@ -175,8 +176,8 @@ class Gambler < Player
   def play_decision
     loop do
       say 'Hit or stand (H or S)? '
-      play = getchar
-      return play if 'hs'.downcase.chars.include?(play)
+      play = getchar.downcase
+      return play if 'hs'.chars.include?(play)
       say "\nInvalid value. Please try again.", 1
     end
   end
@@ -216,8 +217,7 @@ class Table
 
   def show
     cls
-    print "\n" \
-          "#{'General Rodes Black Jack'.center(App::SCREEN_WIDTH)}\n\n" \
+    print "#{App::HEADER}" \
           "#{'Dealer'.center(App::SCREEN_WIDTH)}\n" \
           "#{create_hand_view(@dealer).center(App::SCREEN_WIDTH)}\n\n" \
           "#{Deck::SUITS.join('    ').center(App::SCREEN_WIDTH)}\n\n" \
@@ -258,8 +258,8 @@ class Round
   end
 
   def play
-    @gambler.deal_hand
-    @dealer.deal_hand
+    @gambler.new_hand
+    @dealer.new_hand
     @table.show
     dealer_check_natural
     @table.show
@@ -343,6 +343,8 @@ class BlackJack
   # possible number of cards for both hands.
   NEW_DECK_COUNT = 18
 
+  SPACE = ' '
+
   def initialize
     @deck = Deck.new
     @dealer = Dealer.new(@deck)
@@ -368,15 +370,60 @@ class BlackJack
   private
 
   def closing_screen_message
+    <<~BLOCK
+      Thank you for playing at General Rodes Black Jack, \
+      #{@gambler.name}!#{SPACE}
+
+      #{closing_screen_message_which}
+    BLOCK
+  end
+
+  def closing_screen_message_which
     case @gambler.cash <=> GAMBLER_STAKE
-    when -1 then "You have lost $#{GAMBLER_STAKE - @gambler.cash}. \n\n" \
-       'But not to worry. Just spend a year washing dishes in our kitchen ' \
-       "and we'll call it even.\n\nSee you tomorrow at 5 a.m. Don't be late!"
-    when 1 then "You have won $#{@gambler.cash - GAMBLER_STAKE}. We'll be " \
-       "keeping the money, of course. After all, it was ours to begin " \
-       "with.\n\nStop back and see us again!"
-    else 'You have broken even. Oh, well, maybe next time.'
+    when -1 then  closing_screen_message_lose
+    when  1 then  closing_screen_message_win
+    else          "You have broken even. Oh well, maybe next time.\n"
     end
+  end
+
+  def closing_screen_message_lose
+    <<~BLOCK
+      You have lost $#{GAMBLER_STAKE - @gambler.cash}.#{SPACE}
+
+      But not to worry. Just spend a year washing dishes in our kitchen and \
+      we'll call it even.#{SPACE}
+
+      See you tomorrow at 5 a.m. Don't be late!#{SPACE}
+    BLOCK
+  end
+
+  def closing_screen_message_win
+    <<~BLOCK
+      You have won $#{@gambler.cash - GAMBLER_STAKE}. We'll be keeping the \
+      money, of course. After all, it was ours to begin with.#{SPACE}
+
+      Stop back and see us again!#{SPACE}
+    BLOCK
+  end
+
+  def opening_screen_message
+    <<~BLOCK
+      Welcome #{@gambler.name}!
+
+      You have been awarded a gambling spree at General Rodes Black Jack, \
+      our favorite casino!#{SPACE}
+
+      Black Jack is the game we play ... sort of. No doubling down, and no \
+      splitting pairs.#{SPACE}
+
+      You have $#{GAMBLER_STAKE} to play with. Bet is $#{BET} per hand.#{SPACE}
+
+      Black Jack (natural #{App::BUST_VALUE}) pays #{NATURAL_MULTIPLIER} \
+      to 1. Good luck!#{SPACE}
+
+      Please hit #{KEY_ONLY ? 'any key' : '"Enter"'} when you are ready to \
+      begin:#{SPACE}
+    BLOCK
   end
 
   def play_again?
@@ -397,29 +444,18 @@ class BlackJack
   end
 
   def show_closing_screen
-    message = closing_screen_message
     cls
-    print "\n#{'General Rodes Black Jack'.center(App::SCREEN_WIDTH)}\n\n" \
-          "Thank you for playing at General Rodes Black Jack, " \
-          "#{@gambler.name}!\n\n" \
-          "#{word_wrap(message)}\n\n" \
-          "Please hit #{KEY_ONLY ? 'any key' : '"Enter"'} to leave."
+    print App::HEADER
+    print word_wrap(closing_screen_message)
+    print "Please hit #{KEY_ONLY ? 'any key' : '"Enter"'} to leave ... "
     getchar
-    print "\n\n"
+    print "Bye now.\n\n"
   end
 
   def show_opening_screen
     cls
-    print "\n#{'General Rodes Black Jack'.center(App::SCREEN_WIDTH)}\n\n" \
-          "Welcome #{@gambler.name}!\n\n"
-    print word_wrap("You have been awarded a gambling spree at General " \
-      "Rodes Black Jack, our favorite casino! \n\n" \
-      'Black Jack is the game we play...sort of. No doubling down, and no ' \
-      "splitting pairs. \n\n" \
-      "You have $#{GAMBLER_STAKE} to play with. Bet is $#{BET} per hand. \n\n" \
-      "Black Jack pays #{NATURAL_MULTIPLIER} to 1. Good luck!\n\n")
-    say word_wrap("Please hit #{KEY_ONLY ? 'any key' : '"Enter"'} when you " \
-      'are ready to begin: ')
+    print App::HEADER
+    print word_wrap(opening_screen_message)
     getchar
   end
 end
